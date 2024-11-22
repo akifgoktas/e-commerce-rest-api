@@ -30,7 +30,7 @@ class CartsController extends Controller
                 return response()->json([
                     'status'    => 'success',
                     'message'   => 'Sepetteki ürünler başarılı bir şekilde getirildi',
-                    'products'  => $cart_items,
+                    'cart_items'  => $cart_items,
                 ], 201);
             } catch (\Throwable $th) {
                 return response()->json([
@@ -45,7 +45,15 @@ class CartsController extends Controller
                 $response = response()->json([
                     'status'    => 'success',
                     'message'   => 'Sepetteki ürünler başarılı bir şekilde getirildi',
-                    'products'  => $cart->items,
+                    'cart_items' => $cart->items->mapWithKeys(function ($item) {
+                        return [
+                            $item->product_id => [
+                                'produc_id' => $item->product_id,
+                                'quantity'  => $item->quantity,
+                                'price'     => $item->price,
+                            ],
+                        ];
+                    }),
                 ], 201);
             } catch (\Throwable $th) {
                 return response()->json([
@@ -54,11 +62,6 @@ class CartsController extends Controller
                 ], 400);
             }
         }
-        $response = response()->json([
-            'status'    => 'success',
-            'message'   => 'Sepet',
-            'products'  => $user->cart,
-        ], 201);
 
         return $response;
     }
@@ -84,8 +87,8 @@ class CartsController extends Controller
                     } else {
                         $product_data = [
                             'product_id'    => $product->id,
-                            'name'          => $product->name,
                             'quantity'      => 1,
+                            'price'          => $product->price,
                         ];
                         $cart_items[$product->id] = $product_data;
                         Cookie::queue('cart_items', json_encode($cart_items), 60 * 24 * 7);
@@ -131,7 +134,15 @@ class CartsController extends Controller
                             $response = response()->json([
                                 'status'    => 'success',
                                 'message'   => 'Ürün sepete eklendi',
-                                'cart_items'  => $cart->items,
+                                'cart_items' => $cart->items->mapWithKeys(function ($item) {
+                                    return [
+                                        $item->product_id => [
+                                            'produc_id' => $item->product_id,
+                                            'quantity'  => $item->quantity,
+                                            'price'     => $item->price,
+                                        ],
+                                    ];
+                                }),
                             ], 201);
                         }
                     }
@@ -168,8 +179,8 @@ class CartsController extends Controller
 
                         $product_data = [
                             'product_id'    => $product->id,
-                            'name'          => $product->name,
                             'quantity'      => $request->quantity,
+                            'price'          => $product->price,
                         ];
                         $cart_items[$product->id] = $product_data;
                         Cookie::queue('cart_items', json_encode($cart_items), 60 * 24 * 7);
@@ -212,7 +223,15 @@ class CartsController extends Controller
                                 $response = response()->json([
                                     'status'    => 'success',
                                     'message'   => 'Ürün adedi güncellendi',
-                                    'cart_items'  => $cart->items,
+                                    'cart_items' => $cart->items->mapWithKeys(function ($item) {
+                                        return [
+                                            $item->product_id => [
+                                                'produc_id' => $item->product_id,
+                                                'quantity'  => $item->quantity,
+                                                'price'     => $item->price,
+                                            ],
+                                        ];
+                                    }),
                                 ], 201);
                             }
                         }
@@ -280,7 +299,15 @@ class CartsController extends Controller
                         $response = response()->json([
                             'status'    => 'success',
                             'message'   => 'Ürün sepetten kaldırıldı',
-                            'products'  => $cart_items,
+                            'cart_items' => $cart->items->mapWithKeys(function ($item) {
+                                return [
+                                    $item->product_id => [
+                                        'produc_id' => $item->product_id,
+                                        'quantity'  => $item->quantity,
+                                        'price'     => $item->price,
+                                    ],
+                                ];
+                            }),
                         ], 201);
                     } else {
                         $response = response()->json([
