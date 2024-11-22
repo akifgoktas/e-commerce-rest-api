@@ -29,7 +29,7 @@ class CartsController extends Controller
                 }
                 return response()->json([
                     'status'    => 'success',
-                    'message'   => 'Ürün sepete eklendi',
+                    'message'   => 'Sepetteki ürünler başarılı bir şekilde getirildi',
                     'products'  => $cart_items,
                 ], 201);
             } catch (\Throwable $th) {
@@ -44,7 +44,7 @@ class CartsController extends Controller
                 $cart               = CartsModel::where('user_id', $user_id)->first();
                 $response = response()->json([
                     'status'    => 'success',
-                    'message'   => 'Ürün sepete eklendi',
+                    'message'   => 'Sepetteki ürünler başarılı bir şekilde getirildi',
                     'products'  => $cart->items,
                 ], 201);
             } catch (\Throwable $th) {
