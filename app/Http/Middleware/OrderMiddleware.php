@@ -9,11 +9,7 @@ use Illuminate\Support\Facades\Session;
 
 class OrderMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
+
     public function handle(Request $request, Closure $next): Response
     {
         $user_status = Session::get('user_status');

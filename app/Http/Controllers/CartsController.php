@@ -354,6 +354,7 @@ class CartsController extends Controller
             try {
                 CartItemModel::insert($data);
                 $response = 'sepetteki ürünler veritabanına kayıt edildi.';
+                Cookie::queue(Cookie::forget('cart_items'));
             } catch (\Throwable $th) {
                 $response = 'sepetteki ürünler veritabanına kayıt edilirken hata meydana geldi: ' . $th->getMessage();
             }
