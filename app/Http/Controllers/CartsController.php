@@ -343,11 +343,11 @@ class CartsController extends Controller
         $data = [];
 
         foreach ($cart_items as $cart_item) {
-            $data[] = [ // $data dizisini doldur
+            $data[] = [
                 'cart_id'       => $cart->id,
-                'product_id'    => $cart_item['product_id'], // Dizi erişimi
-                'quantity'      => $cart_item['quantity'],  // Dizi erişimi
-                'price'         => $cart_item['price'],     // Dizi erişimi
+                'product_id'    => $cart_item['product_id'],
+                'quantity'      => $cart_item['quantity'],
+                'price'         => $cart_item['price'],
             ];
         }
         if (!empty($data)) {
