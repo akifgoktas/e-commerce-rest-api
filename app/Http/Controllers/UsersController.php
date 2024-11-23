@@ -8,9 +8,18 @@ use App\Http\Requests\UsersRegisterRequest;
 use App\Http\Requests\UsersLoginRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\CartsController;
 
 class UsersController extends Controller
 {
+
+    private function cacheCartSave()
+    {
+        $cart_controller = new CartsController();
+        $result = $cart_controller->cacheCartSave();
+        return $result;
+    }
+
     private function mailControl($user_email)
     {
         $exists = UsersModel::where('email', $user_email)->exists();
@@ -93,16 +102,24 @@ class UsersController extends Controller
                     'user_id'       => $user_login->id
                 ]);
 
-                $response = response()->json([
-                    'status'    => 'success',
-                    'message'   => 'Giriş yapıldı',
-                ], 201);
+                $cart_cache_save    = $this->cacheCartSave();
+                if ($cart_cache_save) {
+                    $response = response()->json([
+                        'status'    => 'success',
+                        'message'   => 'Giriş yapıldı: ' . $cart_cache_save,
+                    ], 201);
+                } else {
+                    $response = response()->json([
+                        'status'    => 'error',
+                        'message'   => $cart_cache_save,
+                    ], 400);
+                }
             }
         } catch (\Throwable $th) {
             $response = response()->json([
                 'status'    => 'error',
                 'message'   => 'Mail veya şifreniz hatalı: ' . $th->getMessage()
-            ], 500);
+            ], 400);
         }
         return $response;
     }

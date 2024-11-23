@@ -331,22 +331,33 @@ class CartsController extends Controller
         return $response;
     }
 
-    public function cacheCartSave($cart_items)
+    //Bu fonksiyon kullanıcı giriş yaptığı zaman veya kayıt olduğu zaman çalışacak, amacı cache deki ürünleri veritabanına kayıt etmek
+    public function cacheCartSave()
     {
+
         $user_id = Session::get('user_id');
+        $cart               = CartsModel::where('user_id', $user_id)->first();
+
+        $cart_items = Cookie::get('cart_items');
+        $cart_items = $cart_items ? json_decode($cart_items, true) : [];
         $data = [];
 
         foreach ($cart_items as $cart_item) {
-            $data = [
-                'user_id'       => $user_id,
-                'product_id'    => $cart_item->product_id,
-                'quantity'      => $cart_item->quantity,
-                'price'         => $cart_item->price,
+            $data[] = [ // $data dizisini doldur
+                'cart_id'       => $cart->id,
+                'product_id'    => $cart_item['product_id'], // Dizi erişimi
+                'quantity'      => $cart_item['quantity'],  // Dizi erişimi
+                'price'         => $cart_item['price'],     // Dizi erişimi
             ];
         }
-
         if (!empty($data)) {
-            CartItemModel::insert($data);
+            try {
+                CartItemModel::insert($data);
+                $response = 'sepetteki ürünler veritabanına kayıt edildi.';
+            } catch (\Throwable $th) {
+                $response = 'sepetteki ürünler veritabanına kayıt edilirken hata meydana geldi: ' . $th->getMessage();
+            }
         }
+        return $response;
     }
 }
