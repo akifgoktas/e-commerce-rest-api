@@ -5,6 +5,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartsController;
+use App\Http\Controllers\OrdersController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -49,3 +50,5 @@ POST /api/orders
 GET /api/orders
 GET /api/orders/{id}
 */
+
+Route::post('/api/orders', [OrdersController::class, 'add'])->middleware('OrderMiddleware')->name('carts_add');

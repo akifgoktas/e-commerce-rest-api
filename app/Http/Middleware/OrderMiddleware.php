@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Session;
 
-class ProductsMiddleware
+class OrderMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,11 +16,11 @@ class ProductsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $admin_status = Session::get('admin_status');
-        if ($admin_status === false) {
+        $user_status = Session::get('user_status');
+        if ($user_status === false) {
             return response()->json([
                 'status'    => 'error',
-                'message'   => 'Bu işlem için yetkiniz bulunmamaktadır'
+                'message'   => 'Sipariş verebilmeniz için önce giriş yapmalı veya kayıt olmalısınız'
             ], 400);
         }
         return $next($request);
