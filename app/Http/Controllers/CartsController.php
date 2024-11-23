@@ -328,7 +328,25 @@ class CartsController extends Controller
                 ], 400);
             }
         }
-
         return $response;
+    }
+
+    public function cacheCartSave($cart_items)
+    {
+        $user_id = Session::get('user_id');
+        $data = [];
+
+        foreach ($cart_items as $cart_item) {
+            $data = [
+                'user_id'       => $user_id,
+                'product_id'    => $cart_item->product_id,
+                'quantity'      => $cart_item->quantity,
+                'price'         => $cart_item->price,
+            ];
+        }
+
+        if (!empty($data)) {
+            CartItemModel::insert($data);
+        }
     }
 }

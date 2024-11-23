@@ -40,7 +40,7 @@ Route::post('/api/cart/items', [CartsController::class, 'add'])->middleware('Car
 Route::put('/api/cart/items/{id}', [CartsController::class, 'update'])->middleware('CartsMiddleware')->name('carts_update');
 Route::delete('/api/cart/items/{id}', [CartsController::class, 'delete'])->middleware('CartsMiddleware')->name('carts_delete');
 Route::get('/api/cart', [CartsController::class, 'list'])->middleware('CartsMiddleware')->name('carts_list');
-
+Route::get('/api/cart/cachecartsave', [CartsController::class, 'cacheCartSave'])->middleware('CartsMiddleware')->name('cache_cart_save');
 
 
 //Sipariş İşlemleri
