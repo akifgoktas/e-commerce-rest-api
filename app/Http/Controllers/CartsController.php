@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\Http\Requests\CartsItemRequest;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use App\Models\ProductsModel;
 use App\Models\CartItemModel;
@@ -35,7 +34,7 @@ class CartsController extends Controller
             } catch (\Throwable $th) {
                 return response()->json([
                     'status'    => 'error',
-                    'message'   => 'Sepet çağırılırken bir hata meydana geldi'
+                    'message'   => 'Sepet çağırılırken bir hata meydana geldi: ' . $th->getMessage()
                 ], 400);
             }
         } else {
@@ -58,7 +57,7 @@ class CartsController extends Controller
             } catch (\Throwable $th) {
                 return response()->json([
                     'status'    => 'error',
-                    'message'   => 'Sepet çağırılırken bir hata meydana geldi'
+                    'message'   => 'Sepet çağırılırken bir hata meydana geldi: ' . $th->getMessage()
                 ], 400);
             }
         }
@@ -293,8 +292,8 @@ class CartsController extends Controller
                 $cart               = CartsModel::where('user_id', $user_id)->first();
                 $cart_items_product = CartItemModel::where('cart_id', $cart->id)->where('product_id', $id)->first();
                 if ($cart_items_product) {
-                    $deleted    = CartItemModel::where('cart_id', $cart->id)->where('product_id', $id)->delete();
-                    if ($deleted) {
+                    $cart_item_delete    = CartItemModel::where('cart_id', $cart->id)->where('product_id', $id)->delete();
+                    if ($cart_item_delete) {
                         $cart_items     = CartItemModel::where('cart_id', $cart->id)->get();
                         $response = response()->json([
                             'status'    => 'success',
@@ -332,12 +331,19 @@ class CartsController extends Controller
     }
 
     //Bu fonksiyon kullanıcı giriş yaptığı zaman veya kayıt olduğu zaman çalışacak, amacı cache deki ürünleri veritabanına kayıt etmek
-    public function cacheCartSave()
+    public function cookieCartSave()
     {
 
-        $user_id = Session::get('user_id');
-        $cart               = CartsModel::where('user_id', $user_id)->first();
+        $user_id    = Session::get('user_id');
+        $cart       = CartsModel::where('user_id', $user_id)->first();
+        if (!$cart) {
+            $cart_save      = CartsModel::create([
+                'user_id'   => $user_id,
+                'status'    => false
+            ]);
+        }
 
+        $cart       = CartsModel::where('user_id', $user_id)->first();
         $cart_items = Cookie::get('cart_items');
         $cart_items = $cart_items ? json_decode($cart_items, true) : [];
         $data = [];
@@ -358,6 +364,8 @@ class CartsController extends Controller
             } catch (\Throwable $th) {
                 $response = 'sepetteki ürünler veritabanına kayıt edilirken hata meydana geldi: ' . $th->getMessage();
             }
+        } else {
+            $response = 'Sepet boş.';
         }
         return $response;
     }

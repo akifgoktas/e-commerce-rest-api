@@ -13,10 +13,10 @@ use App\Http\Controllers\CartsController;
 class UsersController extends Controller
 {
 
-    private function cacheCartSave()
+    private function cookieCartSave()
     {
         $cart_controller = new CartsController();
-        $result = $cart_controller->cacheCartSave();
+        $result = $cart_controller->cookieCartSave();
         return $result;
     }
 
@@ -102,7 +102,7 @@ class UsersController extends Controller
                     'user_id'       => $user_login->id
                 ]);
 
-                $cart_cache_save    = $this->cacheCartSave();
+                $cart_cache_save    = $this->cookieCartSave();
                 if ($cart_cache_save) {
                     $response = response()->json([
                         'status'    => 'success',
@@ -114,11 +114,16 @@ class UsersController extends Controller
                         'message'   => $cart_cache_save,
                     ], 400);
                 }
+            } else {
+                $response = response()->json([
+                    'status'    => 'error',
+                    'message'   => 'Mail veya şifreniz hatalı'
+                ], 400);
             }
         } catch (\Throwable $th) {
             $response = response()->json([
                 'status'    => 'error',
-                'message'   => 'Mail veya şifreniz hatalı: ' . $th->getMessage()
+                'message'   => 'Giriş yaparken bir hata meydana geldi: ' . $th->getMessage()
             ], 400);
         }
         return $response;

@@ -23,6 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'CartsMiddleware'       => CartsMiddleware::class,
             'OrderMiddleware'       => OrderMiddleware::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/*'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
